@@ -1,6 +1,3 @@
-import actions
-
-
 class Engine:
     def __init__(self, entities, event_handler, player, game_map):
         self.entities = entities
@@ -14,14 +11,10 @@ class Engine:
             if action is None:
                 continue
 
-            if isinstance(action, actions.EscapeAction):
-                actions.EscapeAction()
-
-            if isinstance(action, actions.MovementAction):
-                if not self.game_map.is_blocked(self.player.x + action.dx, self.player.y + action.dy):
-                    self.player.move(action.dx, action.dy)
+            action.perform(self, self.player)
 
     def render(self, console, context):
+        self.game_map.render(console)
         for entity in self.entities:
             console.print(entity.x, entity.y, entity.icon, fg=entity.color)
         context.present(console)

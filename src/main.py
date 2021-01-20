@@ -11,10 +11,6 @@ screen_width = 80
 screen_height = 50
 map_width = 80
 map_height = 45
-colors = {
-    'dark_wall': libtcod.Color(0, 0, 100),
-    'dark_ground': libtcod.Color(50, 50, 150),
-}
 
 
 def main():

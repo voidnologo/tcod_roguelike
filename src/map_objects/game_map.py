@@ -1,4 +1,5 @@
-from map_objects.tile import Tile
+import numpy as np
+from map_objects import tile_types
 
 
 class GameMap:
@@ -8,18 +9,17 @@ class GameMap:
         self.tiles = self.initialize_tiles()
 
     def initialize_tiles(self):
-        tiles = [[Tile(False) for y in range(self.height)] for x in range(self.width)]
+        tiles = np.full(
+            (self.width, self.height),
+            fill_value=tile_types.floor,
+            order='F',
+        )
 
-        tiles[30][22].blocked = True
-        tiles[30][22].block_sight = True
-        tiles[31][22].blocked = True
-        tiles[31][22].block_sight = True
-        tiles[32][22].blocked = True
-        tiles[32][22].block_sight = True
-
+        tiles[30:33, 22] = tile_types.wall
         return tiles
 
-    def is_blocked(self, x, y):
-        if self.tiles[x][y].blocked:
-            return True
-        return False
+    def in_bounds(self, x, y):
+        return 0 <= x < self.width and 0 <= y < self.height
+
+    def render(self, console):
+        console.tiles_rgb[0 : self.width, 0 : self.height] = self.tiles['dark']  # noqa: E203
