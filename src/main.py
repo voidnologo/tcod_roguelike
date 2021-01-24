@@ -4,13 +4,14 @@ import tcod as libtcod
 
 from engine import Engine
 import entity_factories
+import color
 from map_objects.procgen import generate_dungeon
 
 
 screen_width = 80
-screen_height = 50
+screen_height = 60
 map_width = 80
-map_height = 45
+map_height = 50
 
 room_max_size = 10
 room_min_size = 6
@@ -33,14 +34,19 @@ def main():
         engine=engine,
     )
     engine.update_fov()
+    engine.message_log.add_message(
+        'Welcome to the next iteration of Super Dungeon Slaughter!', color.welcome_text
+    )
 
     with libtcod.context.new_terminal(
         columns=screen_width, rows=screen_height, tileset=tileset, title='Yet Another Roguelike', vsync=True
     ) as context:
         console = libtcod.Console(screen_width, screen_height, order='F')
         while True:
-            engine.render(console=console, context=context)
-            engine.event_handler.handle_events()
+            console.clear()
+            engine.event_handler.on_render(console=console)
+            context.present(console)
+            engine.event_handler.handle_events(context)
 
 
 if __name__ == '__main__':

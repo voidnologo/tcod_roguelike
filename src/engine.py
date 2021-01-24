@@ -1,17 +1,27 @@
 from tcod.map import compute_fov
+
 from input_handlers import MainGameEventHandler
+from message_log import MessageLog
+from render_functions import render_bar, render_names_at_mouse_location
 
 
 class Engine:
     def __init__(self, player):
         self.event_handler = MainGameEventHandler(self)
+        self.message_log = MessageLog()
         self.player = player
+        self.mouse_location = (0, 0)
 
-    def render(self, console, context):
+    def render(self, console):
         self.game_map.render(console)
-        console.print(x=1, y=47, string=f'HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}')
-        context.present(console)
-        console.clear()
+        self.message_log.render(console=console, x=21, y=51, width=40, height=10)
+        render_bar(
+            console=console,
+            current_value=self.player.fighter.hp,
+            max_value=self.player.fighter.max_hp,
+            total_width=20,
+        )
+        render_names_at_mouse_location(console, x=21, y=44, engine=self)
 
     def update_fov(self):
         ''' recompute the visible area based on the players point of view '''

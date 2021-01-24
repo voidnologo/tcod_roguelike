@@ -39,21 +39,38 @@ WAIT_KEYS = {
     libtcod.event.K_CLEAR,
 }
 
+CURSOR_Y_KEYS = {
+    libtcod.event.K_UP: -1,
+    libtcod.event.K_DOWN: 1,
+    libtcod.event.K_PAGEUP: -10,
+    libtcod.event.K_PAGEDOWN: 10,
+}
+
 
 class EventHandler(libtcod.event.EventDispatch[actions.Action]):
     def __init__(self, engine):
         self.engine = engine
 
-    def handle_events(self):
-        raise NotImplementedError()
+    def handle_events(self, context):
+        for event in libtcod.event.wait():
+            context.convert_event(event)
+            self.dispatch(event)
+
+    def ev_mousemotion(self, event):
+        if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
+            self.engine.mouse_location = (event.tile.x, event.tile.y)
 
     def ev_quit(self, event):
         raise SystemExit()
 
+    def on_render(self, console):
+        self.engine.render(console)
+
 
 class MainGameEventHandler(EventHandler):
-    def handle_events(self):
+    def handle_events(self, context):
         for event in libtcod.event.wait():
+            context.convert_event(event)
             action = self.dispatch(event)
             if action is None:
                 continue
@@ -73,11 +90,13 @@ class MainGameEventHandler(EventHandler):
             action = actions.WaitAction(player)
         elif key == libtcod.event.K_ESCAPE:
             action = actions.EscapeAction(player)
+        elif key == libtcod.event.K_v:
+            self.engine.event_handler = HistoryViewer(self.engine)
         return action
 
 
 class GameOverEventHandler(EventHandler):
-    def handle_events(self):
+    def handle_events(self, context):
         for event in libtcod.event.wait():
             action = self.dispatch(event)
             if action is None:
@@ -90,3 +109,52 @@ class GameOverEventHandler(EventHandler):
         if key == libtcod.event.K_ESCAPE:
             action = actions.EscapeAction(self.engine.player)
         return action
+
+
+class HistoryViewer(EventHandler):
+    ''' Print message history in a larger window which can be navigated '''
+
+    def __init__(self, engine):
+        super().__init__(engine)
+        self.log_length = len(engine.message_log.messages)
+        self.cursor = self.log_length - 1
+
+    def on_render(self, console):
+        super().on_render(console)  # draw game as background
+        log_console = libtcod.Console(console.width - 6, console.height - 6)
+
+        # Draw a frame with a custom banner title
+        log_console.draw_frame(0, 0, log_console.width, log_console.height)
+        log_console.print_box(0, 0, log_console.width, 1, '┤Message history├', alignment=libtcod.CENTER)
+
+        # Render the message log using the cursor parameter
+        self.engine.message_log.render_messages(
+            log_console,
+            1,
+            1,
+            log_console.width - 2,
+            log_console.height - 2,
+            self.engine.message_log.messages[: self.cursor + 1],
+        )
+        log_console.blit(console, 3, 3)
+
+    def ev_keydown(self, event):
+        # fancy conditional movement to make it feel good
+        if event.sym in CURSOR_Y_KEYS:
+            adjust = CURSOR_Y_KEYS[event.sym]
+            if adjust < 0 and self.cursor == 0:
+                # only move from the top to the bottom when youre on the edge
+                self.cursor = self.log_length - 1
+            elif adjust > 0 and self.cursor == self.log_length - 1:
+                # same with bottom to top movement
+                self.cursor = 0
+            else:
+                # otherwise move while staying clamped to the bounds of the history log
+                self.cursor = max(0, min(self.cursor + adjust, self.log_length - 1))
+
+        elif event.sym == libtcod.event.K_HOME:
+            self.cursor = 0  # move directly to the top message
+        elif event.sym == libtcod.event.K_END:
+            self.cursor == self.log_length - 1  # move directly to last message
+        else:  # any other key moves back to main game state
+            self.engine.event_handler = MainGameEventHandler(self.engine)
