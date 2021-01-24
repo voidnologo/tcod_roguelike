@@ -1,22 +1,11 @@
 from tcod.map import compute_fov
+from input_handlers import EventHandler
 
 
 class Engine:
-    def __init__(self, event_handler, player, game_map):
-        self.event_handler = event_handler
+    def __init__(self, player):
+        self.event_handler = EventHandler(self)
         self.player = player
-        self.game_map = game_map
-        self.update_fov()
-
-    def handle_events(self, events):
-        for event in events:
-            action = self.event_handler.dispatch(event)
-            if action is None:
-                continue
-
-            action.perform(self, self.player)
-            self.handle_enemy_turns()
-            self.update_fov()  # update the FOV before the players next action
 
     def render(self, console, context):
         self.game_map.render(console)

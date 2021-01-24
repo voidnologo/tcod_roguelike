@@ -3,7 +3,8 @@ from map_objects import tile_types
 
 
 class GameMap:
-    def __init__(self, width, height, entities):
+    def __init__(self, engine, width, height, entities):
+        self.engine = engine
         self.width = width
         self.height = height
         self.entities = set(entities)

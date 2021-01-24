@@ -75,9 +75,10 @@ def generate_dungeon(
     map_width,
     map_height,
     max_monsters_per_room,
-    player,
+    engine,
 ):
-    dungeon = GameMap(map_width, map_height, entities=[player])
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
     rooms = []
 
     for r in range(max_rooms):
@@ -94,7 +95,7 @@ def generate_dungeon(
         dungeon.tiles[new_room.inner] = tile_types.floor
 
         if len(rooms) == 0:  # player starts in the first room
-            player.x, player.y = new_room.center
+            player.place(*new_room.center, dungeon)
         else:
             # dig a tunnel to prior room
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
