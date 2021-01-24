@@ -1,10 +1,12 @@
 from components.ai import BaseAI, HostileEnemy
+from components.consumable import HealingConsumable
 from components.fighter import Fighter
-from entity import Actor
+from components.inventory import Inventory
+from entity import Actor, Item
 
 player = Actor(
     icon='@',
-    color=(255, 255, 255),
+    color=(255, 128, 0),
     name='Player',
     ai_cls=BaseAI,
     fighter=Fighter(
@@ -12,6 +14,7 @@ player = Actor(
         defense=2,
         power=5,
     ),
+    inventory=Inventory(capacity=26),
 )
 
 orc = Actor(
@@ -24,6 +27,7 @@ orc = Actor(
         defense=0,
         power=3,
     ),
+    inventory=Inventory(capacity=0),
 )
 
 troll = Actor(
@@ -36,4 +40,12 @@ troll = Actor(
         defense=1,
         power=4,
     ),
+    inventory=Inventory(capacity=0),
+)
+
+health_potion = Item(
+    icon='!',
+    color=(128, 0, 128),
+    name='Health Potion',
+    consumable=HealingConsumable(amount=4),
 )

@@ -1,6 +1,6 @@
 import numpy as np
 
-from entity import Actor
+from entity import Actor, Item
 from map_objects import tile_types
 
 
@@ -59,6 +59,10 @@ class GameMap:
     @property
     def actors(self):
         yield from (entity for entity in self.entities if isinstance(entity, Actor) and entity.is_alive)
+
+    @property
+    def items(self):
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     def get_actor_at_location(self, location_x, location_y):
         for actor in self.actors:

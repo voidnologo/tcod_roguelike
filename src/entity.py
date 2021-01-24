@@ -64,6 +64,7 @@ class Actor(Entity):
         name='<Unnamed>',
         ai_cls,
         fighter,
+        inventory,
     ):
         super().__init__(
             x=x,
@@ -79,7 +80,35 @@ class Actor(Entity):
         self.fighter = fighter
         self.fighter.parent = self
 
+        self.inventory = inventory
+        self.inventory.parent = self
+
     @property
     def is_alive(self):
         ''' Returns True as long as this actor can perform actions '''
         return bool(self.ai)
+
+
+class Item(Entity):
+    def __init__(
+        self,
+        *,
+        x=0,
+        y=0,
+        icon='?',
+        color=(255, 255, 255),
+        name='<Unnamed>',
+        consumable=None,
+    ):
+        super().__init__(
+            x=x,
+            y=y,
+            icon=icon,
+            color=color,
+            name=name,
+            blocks_movement=False,
+            render_order=RenderOrder.ITEM,
+        )
+
+        self.consumable = consumable
+        self.consumable.parent = self

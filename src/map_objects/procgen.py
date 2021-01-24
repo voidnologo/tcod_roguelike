@@ -54,8 +54,9 @@ def tunnel_between(start, end):
         yield x, y
 
 
-def place_entities(room, dungeon, maximum_monsters):
+def place_entities(room, dungeon, maximum_monsters, maximum_items):
     number_of_monsters = random.randint(0, maximum_monsters)
+    number_of_items = random.randint(0, maximum_items)
 
     for i in range(number_of_monsters):
         x = random.randint(room.x1 + 1, room.x2 - 1)
@@ -67,6 +68,13 @@ def place_entities(room, dungeon, maximum_monsters):
             else:
                 entity_factories.troll.spawn(dungeon, x, y)
 
+    for i in range(number_of_items):
+        x = random.randint(room.x1 + 1, room.x2 - 1)
+        y = random.randint(room.y1 + 1, room.y2 - 1)
+
+        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            entity_factories.health_potion.spawn(dungeon, x, y)
+
 
 def generate_dungeon(
     max_rooms,
@@ -75,6 +83,7 @@ def generate_dungeon(
     map_width,
     map_height,
     max_monsters_per_room,
+    max_items_per_room,
     engine,
 ):
     player = engine.player
@@ -101,7 +110,7 @@ def generate_dungeon(
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
-        place_entities(new_room, dungeon, max_monsters_per_room)
+        place_entities(new_room, dungeon, max_monsters_per_room, max_items_per_room)
 
         rooms.append(new_room)
 

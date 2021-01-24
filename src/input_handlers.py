@@ -1,6 +1,8 @@
 import tcod as libtcod
 
 import actions
+import color
+import exceptions
 
 
 MOVE_KEYS = {
@@ -51,10 +53,26 @@ class EventHandler(libtcod.event.EventDispatch[actions.Action]):
     def __init__(self, engine):
         self.engine = engine
 
-    def handle_events(self, context):
-        for event in libtcod.event.wait():
-            context.convert_event(event)
-            self.dispatch(event)
+    def handle_events(self, event):
+        self.handle_actions(self.dispatch(event))
+
+    def handle_actions(self, action):
+        """
+        Handle actions returned from event methods
+        returns True if action will advance a turn
+        """
+        if action is None:
+            return False
+
+        try:
+            action.perform()
+        except exceptions.Impossible as exc:
+            self.engine.message_log.add_message(exc.args[0], color.impossible)
+            return False  # skip enemy turn on exceptions
+
+        self.engine.handle_enemy_turns()
+        self.engine.update_fov()
+        return True
 
     def ev_mousemotion(self, event):
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
@@ -68,17 +86,6 @@ class EventHandler(libtcod.event.EventDispatch[actions.Action]):
 
 
 class MainGameEventHandler(EventHandler):
-    def handle_events(self, context):
-        for event in libtcod.event.wait():
-            context.convert_event(event)
-            action = self.dispatch(event)
-            if action is None:
-                continue
-            action.perform()
-
-            self.engine.handle_enemy_turns()
-            self.engine.update_fov()  # Update the FOV before the players next action
-
     def ev_keydown(self, event):
         action = None
         player = self.engine.player
@@ -92,23 +99,17 @@ class MainGameEventHandler(EventHandler):
             action = actions.EscapeAction(player)
         elif key == libtcod.event.K_v:
             self.engine.event_handler = HistoryViewer(self.engine)
+        elif key == libtcod.event.K_g:
+            action = actions.PickupAction(player)
         return action
 
 
 class GameOverEventHandler(EventHandler):
-    def handle_events(self, context):
-        for event in libtcod.event.wait():
-            action = self.dispatch(event)
-            if action is None:
-                continue
-            action.perform()
-
     def ev_keydown(self, event):
-        action = None
-        key = event.sym
-        if key == libtcod.event.K_ESCAPE:
-            action = actions.EscapeAction(self.engine.player)
-        return action
+        if event.sym == libtcod.event.K_ESCAPE:
+            raise SystemExit()
+            # action = actions.EscapeAction(self.engine.player)
+        # return action
 
 
 class HistoryViewer(EventHandler):

@@ -1,9 +1,9 @@
 import color
+import exceptions
 
 
 class Action:
     def __init__(self, entity):
-        super().__init__()
         self.entity = entity
 
     @property
@@ -54,7 +54,7 @@ class MeleeAction(ActionWithDirection):
     def perform(self):
         target = self.target_actor
         if not target:
-            return
+            raise exceptions.Impossible('Nothing to attack.')
 
         damage = self.entity.fighter.power - target.fighter.defense
 
@@ -73,11 +73,14 @@ class MovementAction(ActionWithDirection):
         dest_x, dest_y = self.dest_xy
 
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
-            return  # destination off of map
+            # destination off of map
+            raise exceptions.Impossible('That way is blocked.')
         if not self.engine.game_map.tiles['walkable'][dest_x, dest_y]:
-            return  # destination blocked by a tile
+            # destination blocked by a tile
+            raise exceptions.Impossible('That way is blocked.')
         if self.blocking_entity:
-            return  # destination blocked by a entity
+            # destination blocked by a entity
+            raise exceptions.Impossible('That way is blocked.')
 
         self.entity.move(self.dx, self.dy)
 
@@ -95,3 +98,41 @@ class BumpAction(ActionWithDirection):
 class WaitAction(Action):
     def perform(self):
         pass
+
+
+class ItemAction(Action):
+    def __init__(self, entity, item, target_xy=None):
+        super().__init__(entity)
+        self.item = item
+        if not target_xy:
+            target_xy = (entity.x, entity.y)
+        self.target_xy = target_xy
+
+    @property
+    def target_actor(self):
+        return self.engine.game_map.get_actor_at_locatin(*self.target_xy)
+
+    def perform(self):
+        """
+        Invoke the items ability, thi action will be given as the context
+        """
+        self.item.consumable.activate(self)
+
+
+class PickupAction(Action):
+    def perform(self):
+        actor_location_x = self.entity.x
+        actor_location_y = self.entity.y
+        inventory = self.entity.inventory
+
+        for item in self.engine.game_map.items:
+            if actor_location_x == item.x and actor_location_y == item.y:
+                if inventory.full:
+                    raise exceptions.Impossible('Your inventory is full.')
+                self.engine.game_map.entities.remove(item)
+                item.parent = self.entity.inventory
+                inventory.items.append(item)
+
+                self.engine.message_log.add_message(f'You picked up the {item.name}.')
+                return
+        raise exceptions.Impossible('There is nothing here to pick up.')
