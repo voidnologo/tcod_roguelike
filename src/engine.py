@@ -1,14 +1,15 @@
 from tcod.map import compute_fov
-from input_handlers import EventHandler
+from input_handlers import MainGameEventHandler
 
 
 class Engine:
     def __init__(self, player):
-        self.event_handler = EventHandler(self)
+        self.event_handler = MainGameEventHandler(self)
         self.player = player
 
     def render(self, console, context):
         self.game_map.render(console)
+        console.print(x=1, y=47, string=f'HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}')
         context.present(console)
         console.clear()
 
@@ -23,5 +24,6 @@ class Engine:
         self.game_map.explored |= self.game_map.visible
 
     def handle_enemy_turns(self):
-        for entity in self.game_map.entities - {self.player}:
-            print(f'The {entity.name} wants to take a turn.')
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()

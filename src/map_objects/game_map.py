@@ -1,4 +1,6 @@
 import numpy as np
+
+from entity import Actor
 from map_objects import tile_types
 
 
@@ -33,7 +35,7 @@ class GameMap:
             default=tile_types.FOW,
         )
 
-        for entity in self.entities:
+        for entity in sorted(self.entities, key=lambda x: x.render_order.value):
             # only print entities in FOV
             if self.visible[entity.x, entity.y]:
                 console.print(x=entity.x, y=entity.y, string=entity.icon, fg=entity.color)
@@ -48,4 +50,14 @@ class GameMap:
                 )
             ):
                 return entity
+        return None
+
+    @property
+    def actors(self):
+        yield from (entity for entity in self.entities if isinstance(entity, Actor) and entity.is_alive)
+
+    def get_actor_at_location(self, location_x, location_y):
+        for actor in self.actors:
+            if actor.x == location_x and actor.y == location_y:
+                return actor
         return None
