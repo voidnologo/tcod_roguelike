@@ -4,6 +4,7 @@ import tcod as libtcod
 
 from .game_map import GameMap
 from . import tile_types
+import entity_factories
 
 
 class RectangularRoom:
@@ -53,8 +54,30 @@ def tunnel_between(start, end):
         yield x, y
 
 
-def generate_dungeon(max_rooms, room_min_size, room_max_size, map_width, map_height, player):
-    dungeon = GameMap(map_width, map_height)
+def place_entities(room, dungeon, maximum_monsters):
+    number_of_monsters = random.randint(0, maximum_monsters)
+
+    for i in range(number_of_monsters):
+        x = random.randint(room.x1 + 1, room.x2 - 1)
+        y = random.randint(room.y1 + 1, room.y2 - 1)
+
+        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            if random.random() < 0.8:
+                entity_factories.orc.spawn(dungeon, x, y)
+            else:
+                entity_factories.troll.spawn(dungeon, x, y)
+
+
+def generate_dungeon(
+    max_rooms,
+    room_min_size,
+    room_max_size,
+    map_width,
+    map_height,
+    max_monsters_per_room,
+    player,
+):
+    dungeon = GameMap(map_width, map_height, entities=[player])
     rooms = []
 
     for r in range(max_rooms):
@@ -76,6 +99,8 @@ def generate_dungeon(max_rooms, room_min_size, room_max_size, map_width, map_hei
             # dig a tunnel to prior room
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
+
+        place_entities(new_room, dungeon, max_monsters_per_room)
 
         rooms.append(new_room)
 

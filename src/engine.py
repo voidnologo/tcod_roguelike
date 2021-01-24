@@ -2,8 +2,7 @@ from tcod.map import compute_fov
 
 
 class Engine:
-    def __init__(self, entities, event_handler, player, game_map):
-        self.entities = entities
+    def __init__(self, event_handler, player, game_map):
         self.event_handler = event_handler
         self.player = player
         self.game_map = game_map
@@ -16,14 +15,11 @@ class Engine:
                 continue
 
             action.perform(self, self.player)
+            self.handle_enemy_turns()
             self.update_fov()  # update the FOV before the players next action
 
     def render(self, console, context):
         self.game_map.render(console)
-        for entity in self.entities:
-            # only print entities in FOV
-            if self.game_map.visible[entity.x, entity.y]:
-                console.print(entity.x, entity.y, entity.icon, fg=entity.color)
         context.present(console)
         console.clear()
 
@@ -36,3 +32,7 @@ class Engine:
         )
         # if a tile is "visible" add it to "explored"
         self.game_map.explored |= self.game_map.visible
+
+    def handle_enemy_turns(self):
+        for entity in self.game_map.entities - {self.player}:
+            print(f'The {entity.name} wants to take a turn.')
