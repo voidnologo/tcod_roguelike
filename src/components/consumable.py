@@ -1,5 +1,6 @@
 import actions
 import color
+import components.inventory
 import exceptions
 from components.base_component import BaseComponent
 
@@ -17,6 +18,15 @@ class Consumable(BaseComponent):
         """
         raise NotImplementedError()
 
+    def consume(self):
+        """
+        Remove consumed item from containing inventory
+        """
+        entity = self.parent
+        inventory = entity.parent
+        if isinstance(inventory, components.inventory.Inventory):
+            inventory.items.remove(entity)
+
 
 class HealingConsumable(Consumable):
     def __init__(self, amount):
@@ -31,5 +41,6 @@ class HealingConsumable(Consumable):
                 f'You consume the {self.parent.name}, and recover {amount_recovered}.',
                 color.health_recovered,
             )
+            self.consume()
         else:
             raise exceptions.Impossible('Your health is already full.')

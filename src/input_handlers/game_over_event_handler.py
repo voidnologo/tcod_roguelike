@@ -7,5 +7,3 @@ class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event):
         if event.sym == libtcod.event.K_ESCAPE:
             raise SystemExit()
-            # action = actions.EscapeAction(self.engine.player)
-        # return action

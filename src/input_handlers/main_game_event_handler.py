@@ -3,6 +3,8 @@ import tcod as libtcod
 import actions
 from input_handlers.base_event_handler import EventHandler
 from input_handlers.history_viewer import HistoryViewer
+from input_handlers.inventory_activate_handler import InventoryActivateHandler
+from input_handlers.inventory_drop_handler import InventoryDropHandler
 from input_handlers import consts
 
 
@@ -17,9 +19,13 @@ class MainGameEventHandler(EventHandler):
         elif key in consts.WAIT_KEYS:
             action = actions.WaitAction(player)
         elif key == libtcod.event.K_ESCAPE:
-            action = actions.EscapeAction(player)
+            raise SystemExit()
         elif key == libtcod.event.K_v:
             self.engine.event_handler = HistoryViewer(self.engine)
         elif key == libtcod.event.K_g:
             action = actions.PickupAction(player)
+        elif key == libtcod.event.K_i:
+            self.engine.event_handler = InventoryActivateHandler(self.engine)
+        elif key == libtcod.event.K_d:
+            self.engine.event_handler = InventoryDropHandler(self.engine)
         return action
