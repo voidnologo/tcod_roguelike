@@ -15,6 +15,10 @@ class GameMap:
         self.visible = np.full((width, height), fill_value=False, order='F')  # tiles player can currently see
         self.explored = np.full((width, height), fill_value=False, order='F')  # tiles player has seen
 
+    @property
+    def gamemap(self):
+        return self
+
     def initialize_tiles(self):
         tiles = np.full(
             (self.width, self.height),

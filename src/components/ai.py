@@ -2,10 +2,9 @@ import numpy as np
 import tcod as libtcod
 
 from actions import Action, MeleeAction, MovementAction, WaitAction
-from components.base_component import BaseComponent
 
 
-class BaseAI(Action, BaseComponent):
+class BaseAI(Action):
     entity = None
 
     def perform(self):

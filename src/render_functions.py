@@ -36,12 +36,14 @@ def clear_entity(console, entity):
 
 
 def render_bar(console, current_value, max_value, total_width):
+    x_loc = 0
+    y_loc = 51
     bar_width = int(float(current_value) / max_value * total_width)
-    console.draw_rect(x=0, y=45, width=20, height=1, ch=1, bg=color.bar_empty)
+    console.draw_rect(x=x_loc, y=y_loc, width=20, height=1, ch=1, bg=color.bar_empty)
     if bar_width > 0:
-        console.draw_rect(x=0, y=45, width=bar_width, height=1, ch=1, bg=color.bar_filled)
+        console.draw_rect(x=x_loc, y=y_loc, width=bar_width, height=1, ch=1, bg=color.bar_filled)
 
-    console.print(x=1, y=45, string=f'HP: {current_value}/{max_value}', fg=color.bar_text)
+    console.print(x=x_loc + 1, y=y_loc, string=f'HP: {current_value}/{max_value}', fg=color.bar_text)
 
 
 def get_names_at_location(x, y, game_map):
