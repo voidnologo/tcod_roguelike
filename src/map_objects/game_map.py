@@ -8,6 +8,9 @@ class GameMap:
         self.height = height
         self.tiles = self.initialize_tiles()
 
+        self.visible = np.full((width, height), fill_value=False, order='F')  # tiles player can currently see
+        self.explored = np.full((width, height), fill_value=False, order='F')  # tiles player has seen
+
     def initialize_tiles(self):
         tiles = np.full(
             (self.width, self.height),
@@ -22,4 +25,8 @@ class GameMap:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def render(self, console):
-        console.tiles_rgb[0 : self.width, 0 : self.height] = self.tiles['dark']  # noqa: E203
+        console.tiles_rgb[0 : self.width, 0 : self.height] = np.select(  # noqa: E203
+            condlist=[self.visible, self.explored],
+            choicelist=[self.tiles['light'], self.tiles['dark']],
+            default=tile_types.FOW,
+        )

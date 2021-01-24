@@ -16,12 +16,32 @@ tile_dt = np.dtype(
         ('walkable', np.bool),  # True if this tile can be walked over.
         ('transparent', np.bool),  # True if this tile doesn't block FOV.
         ('dark', graphic_dt),  # Graphics for when this tile is not in FOV.
+        ('light', graphic_dt),  # Graphics for when this tile is in FOV.
     ]
 )
 
 
-def new_tile(*, walkable, transparent, dark):
-    return np.array((walkable, transparent, dark), dtype=tile_dt)
+def new_tile(*, walkable, transparent, dark, light):
+    return np.array(
+        (
+            walkable,
+            transparent,
+            dark,
+            light,
+        ),
+        dtype=tile_dt,
+    )
+
+
+# FOW - fog of war
+FOW = np.array(
+    (
+        ord(' '),
+        (255, 255, 255),
+        (0, 0, 0),
+    ),
+    dtype=graphic_dt,
+)
 
 
 floor = new_tile(
@@ -32,6 +52,11 @@ floor = new_tile(
         (255, 255, 255),
         (50, 50, 150),
     ),
+    light=(
+        ord(' '),
+        (255, 255, 255),
+        (200, 180, 50),
+    ),
 )
 
 wall = new_tile(
@@ -41,5 +66,10 @@ wall = new_tile(
         ord(' '),
         (255, 255, 255),
         (0, 0, 100),
+    ),
+    light=(
+        ord(' '),
+        (255, 255, 255),
+        (130, 110, 50),
     ),
 )
