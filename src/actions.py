@@ -10,7 +10,7 @@ class Action:
 
 
 class EscapeAction(Action):
-    def perform(self, engine, entity):
+    def perform(self, engine, entity=None):
         raise SystemExit()
 
 

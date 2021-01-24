@@ -11,7 +11,7 @@ class GameMap:
     def initialize_tiles(self):
         tiles = np.full(
             (self.width, self.height),
-            fill_value=tile_types.floor,
+            fill_value=tile_types.wall,
             order='F',
         )
 
