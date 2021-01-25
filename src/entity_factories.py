@@ -1,5 +1,6 @@
 from components.ai import BaseAI, HostileEnemy
-from components.consumable import HealingConsumable
+from components.healing_consumable import HealingConsumable
+from components.lightening_damage_consumable import LighteningDamageConsumable
 from components.fighter import Fighter
 from components.inventory import Inventory
 from entity import Actor, Item
@@ -48,4 +49,11 @@ health_potion = Item(
     color=(128, 0, 128),
     name='Health Potion',
     consumable=HealingConsumable(amount=4),
+)
+
+lightening_scroll = Item(
+    icon='~',
+    color=(255, 165, 83),
+    name='Lightening Scroll',
+    consumable=LighteningDamageConsumable(damage=20, maximum_range=5),
 )
