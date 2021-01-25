@@ -5,4 +5,7 @@ from .history_viewer import HistoryViewer
 from .inventory_activate_handler import InventoryActivateHandler
 from .inventory_drop_handler import InventoryDropHandler
 from .inventory_event_handler import InventoryEventHandler
+from .look_handler import LookHandler
 from .main_game_event_handler import MainGameEventHandler
+from .select_index_handler import SelectIndexHandler
+from .single_ranged_attack_handler import SingleRangedAttackHandler

@@ -1,8 +1,9 @@
 from components.ai import BaseAI, HostileEnemy
-from components.healing_consumable import HealingConsumable
-from components.lightening_damage_consumable import LighteningDamageConsumable
+from components.confusion_consumable import ConfusionConsumable
 from components.fighter import Fighter
+from components.healing_consumable import HealingConsumable
 from components.inventory import Inventory
+from components.lightening_damage_consumable import LighteningDamageConsumable
 from entity import Actor, Item
 
 player = Actor(
@@ -56,4 +57,11 @@ lightening_scroll = Item(
     color=(255, 165, 83),
     name='Lightening Scroll',
     consumable=LighteningDamageConsumable(damage=20, maximum_range=5),
+)
+
+confusion_scroll = Item(
+    icon='~',
+    color=(207, 63, 255),
+    name='Confusion Scroll',
+    consumable=ConfusionConsumable(number_of_turns=10),
 )

@@ -42,3 +42,8 @@ CURSOR_Y_KEYS = {
     libtcod.event.K_PAGEUP: -10,
     libtcod.event.K_PAGEDOWN: 10,
 }
+
+CONFIRM_KEYS = {
+    libtcod.event.K_RETURN,
+    libtcod.event.K_KP_ENTER,
+}

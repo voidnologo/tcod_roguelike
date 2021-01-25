@@ -11,7 +11,7 @@ class ItemAction(Action):
 
     @property
     def target_actor(self):
-        return self.engine.game_map.get_actor_at_locatin(*self.target_xy)
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)
 
     def perform(self):
         """
