@@ -1,3 +1,4 @@
+from .area_ranged_attack_handler import AreaRangedAttackHandler
 from .ask_user_event_handler import AskUserEventHandler
 from .base_event_handler import EventHandler
 from .game_over_event_handler import GameOverEventHandler
