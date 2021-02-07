@@ -12,7 +12,7 @@ class ConfusionConsumable(Consumable):
 
     def get_action(self, consumer):
         self.engine.message_log.add_message('Select a target location.', color.needs_target)
-        self.engine.event_handler = SingleRangedAttackHandler(
+        return SingleRangedAttackHandler(
             self.engine,
             callback=lambda xy: actions.ItemAction(consumer, self.parent, xy),
         )

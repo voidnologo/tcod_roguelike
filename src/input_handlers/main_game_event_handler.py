@@ -22,13 +22,13 @@ class MainGameEventHandler(EventHandler):
         elif key == libtcod.event.K_ESCAPE:
             raise SystemExit()
         elif key == libtcod.event.K_v:
-            self.engine.event_handler = HistoryViewer(self.engine)
+            return HistoryViewer(self.engine)
         elif key == libtcod.event.K_g:
             action = actions.PickupAction(player)
         elif key == libtcod.event.K_i:
-            self.engine.event_handler = InventoryActivateHandler(self.engine)
+            return InventoryActivateHandler(self.engine)
         elif key == libtcod.event.K_d:
-            self.engine.event_handler = InventoryDropHandler(self.engine)
+            return InventoryDropHandler(self.engine)
         elif key == libtcod.event.K_SLASH:
-            self.engine.event_handler = LookHandler(self.engine)
+            return LookHandler(self.engine)
         return action

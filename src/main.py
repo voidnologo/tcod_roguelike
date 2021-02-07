@@ -4,8 +4,10 @@ import traceback
 import tcod as libtcod
 
 from engine import Engine
-import entity_factories
 import color
+import entity_factories
+import exceptions
+from input_handlers import MainGameEventHandler, EventHandler
 from map_objects.procgen import generate_dungeon
 
 
@@ -20,6 +22,21 @@ max_rooms = 30
 
 max_monsters_per_room = 2
 max_items_per_room = 2
+
+
+def game_loop(console, context, handler):
+    console.clear()
+    handler.on_render(console=console)
+    context.present(console)
+    try:
+        for event in libtcod.event.wait():
+            context.convert_event(event)
+            handler = handler.handle_events(event)
+    except Exception:
+        traceback.print_exc()  # print errors to stderr
+        if isinstance(handler, EventHandler):
+            # then print to message log
+            handler.engine.message_log.add_message(traceback.format_exc(), color.error)
 
 
 def main():
@@ -41,22 +58,23 @@ def main():
         'Welcome to the next iteration of Super Dungeon Slaughter!', color.welcome_text
     )
 
+    handler = MainGameEventHandler(engine)
+
     with libtcod.context.new_terminal(
         columns=screen_width, rows=screen_height, tileset=tileset, title='Yet Another Roguelike', vsync=True
     ) as context:
         console = libtcod.Console(screen_width, screen_height, order='F')
-        while True:
-            console.clear()
-            engine.event_handler.on_render(console=console)
-            context.present(console)
-            try:
-                for event in libtcod.event.wait():
-                    context.convert_event(event)
-                    engine.event_handler.handle_events(event)
-            except Exception:
-                traceback.print_exc()  # print errors to stderr
-                # then print to message log
-                engine.message_log.add_message(traceback.format_exc(), color.error)
+        try:
+            while True:
+                game_loop(console, context, handler)
+        except exceptions.QuitWithoutSaving:
+            raise
+        except SystemExit:  # Save and quit
+            # TODO: Add save function
+            raise
+        except BaseException:  # Save on other unexpected exceptions
+            # TODO: Add save function
+            raise
 
 
 if __name__ == '__main__':

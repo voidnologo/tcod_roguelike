@@ -4,14 +4,6 @@ from input_handlers.base_event_handler import EventHandler
 
 
 class AskUserEventHandler(EventHandler):
-    def handle_action(self, action):
-        if super().handle_action(action):
-            from input_handlers.main_game_event_handler import MainGameEventHandler
-
-            self.engine.event_handler = MainGameEventHandler(self.engine)
-            return True
-        return False
-
     def ev_keydown(self, event):
         """
         By default any key exits this input handler.
@@ -40,5 +32,4 @@ class AskUserEventHandler(EventHandler):
         """
         from input_handlers.main_game_event_handler import MainGameEventHandler
 
-        self.engine.event_handler = MainGameEventHandler(self.engine)
-        return None
+        return MainGameEventHandler(self.engine)

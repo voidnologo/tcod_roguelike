@@ -52,4 +52,5 @@ class HistoryViewer(EventHandler):
         else:  # any other key moves back to main game state
             from input_handlers.main_game_event_handler import MainGameEventHandler
 
-            self.engine.event_handler = MainGameEventHandler(self.engine)
+            return MainGameEventHandler(self.engine)
+        return None

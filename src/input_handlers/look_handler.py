@@ -9,4 +9,4 @@ class LookHandler(SelectIndexHandler):
     def on_index_selected(self, x, y):
         from input_handlers.main_game_event_handler import MainGameEventHandler
 
-        self.engine.event_handler = MainGameEventHandler(self.engine)
+        return MainGameEventHandler(self.engine)
