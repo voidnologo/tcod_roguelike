@@ -193,11 +193,186 @@ custom_config = GameConfig(screen_width=100, screen_height=80)
 
 ## Testing
 
+### Running Tests
+
+The project uses Python's built-in `unittest` framework. **Do not use pytest.**
+
+```bash
+# Run all tests
+python run_tests.py
+
+# Run with verbose output
+python run_tests.py -v
+
+# Run specific test module
+python run_tests.py test_entity
+
+# Run specific test class
+python run_tests.py test_entity.TestEntityBasics
+
+# Run specific test method
+python run_tests.py test_entity.TestEntityBasics.test_entity_has_position
+
+# List all available tests
+python run_tests.py --list
+
+# Stop on first failure
+python run_tests.py -f
+```
+
+### Test Organization
+
+Tests are organized by the file/functionality they test:
+
+```
+tests/
+├── __init__.py
+├── factories.py          # Test factories for creating game objects
+├── helpers.py            # Base test cases and utilities
+├── test_entity.py        # Entity, Actor, Item tests
+├── test_components.py    # Fighter, Inventory, AI, Consumable tests
+├── test_actions.py       # Action classes tests
+├── test_map.py           # GameMap and procedural generation tests
+├── test_input_handlers.py# Input handler tests
+└── test_engine.py        # Engine integration tests
+```
+
+### Writing Tests
+
+#### Test Philosophy
+
+- **Integration over unit**: Prefer testing from a user perspective
+- **Tests as documentation**: Test names and docstrings explain business logic
+- **Use factories**: Create objects with `GameFactory`, not raw constructors
+
+#### Base Test Classes
+
+Use the provided base classes for common setups:
+
+```python
+from tests.helpers import GameTestCase, CombatTestCase
+
+class TestMyFeature(GameTestCase):
+    """Test description explaining the business logic."""
+
+    def test_player_can_do_something(self):
+        """Players should be able to do X when Y."""
+        # self.player, self.engine, self.game_map available
+        self.player.move(1, 0)
+        self.assertPlayerAt(11, 10)
+
+class TestCombat(CombatTestCase):
+    """Combat tests with an enemy pre-placed adjacent to player."""
+
+    def test_attack_deals_damage(self):
+        """Attacking an enemy should deal power minus defense damage."""
+        # self.enemy is already adjacent to player
+        initial_hp = self.enemy.fighter.hp
+        self.attack_enemy()
+        self.assertLess(self.enemy.fighter.hp, initial_hp)
+```
+
+#### Test Factories
+
+Use `GameFactory` to create test objects:
+
+```python
+from tests.factories import GameFactory
+
+# Create complete game setup
+game = GameFactory.create_game()
+
+# Create entities
+player = GameFactory.create_player(hp=50, power=10)
+orc = GameFactory.create_orc(game_map, x=5, y=5)
+potion = GameFactory.create_health_potion(game_map, x=3, y=3)
+
+# Create maps
+game_map = GameFactory.create_map(engine, width=30, height=30)
+game_map = GameFactory.create_map_with_walls(engine, wall_positions=[(5, 5), (6, 5)])
+```
+
+#### Custom Assertions
+
+The `GameTestCase` class provides helpful assertions:
+
+```python
+self.assertPlayerAt(x, y)              # Check player position
+self.assertPlayerHP(expected)           # Check player HP
+self.assertMessageContains("text")      # Check message log
+self.assertLastMessage("exact message") # Check last message
+self.assertInventoryContains("item")    # Check inventory
+self.assertInventoryEmpty()             # Check empty inventory
+self.assertEntityAt(entity, x, y)       # Check entity position
+```
+
+#### Helper Methods
+
+The base classes provide helper methods:
+
+```python
+# Place entities
+orc = self.place_orc(5, 5)
+potion = self.place_health_potion(3, 3)
+
+# Modify player state
+self.set_player_hp(10)
+self.damage_player(5)
+self.add_item_to_inventory(item)
+
+# Modify map
+self.make_tile_wall(5, 5)
+self.make_tile_walkable(5, 5)
+self.set_visible(5, 5, True)
+self.make_area_visible(0, 0, 20, 20)
+```
+
+### Test Naming Conventions
+
+- **Test classes**: `Test<Feature>` (e.g., `TestEntityMovement`)
+- **Test methods**: `test_<what>_<expected>` (e.g., `test_move_changes_position`)
+- **Docstrings**: Explain the business rule being tested
+
+### Example Test
+
+```python
+class TestPickupAction(GameTestCase):
+    """Test item collection from the game world.
+
+    Business Logic:
+    - Players can pick up items at their location
+    - Items are removed from the map and added to inventory
+    - Full inventory prevents pickup
+    """
+
+    def test_pickup_adds_item_to_inventory(self):
+        """Picking up an item should add it to player's inventory."""
+        potion = self.place_health_potion(self.player.x, self.player.y)
+
+        PickupAction(self.player).perform()
+
+        self.assertInventoryContains('Health Potion')
+
+    def test_pickup_full_inventory_fails(self):
+        """Cannot pick up items when inventory is full."""
+        # Fill inventory to capacity
+        for _ in range(self.player.inventory.capacity):
+            self.add_item_to_inventory(GameFactory.create_health_potion())
+
+        self.place_health_potion(self.player.x, self.player.y)
+
+        with self.assertRaises(exceptions.ImpossibleActionError):
+            PickupAction(self.player).perform()
+```
+
+### Manual Testing
+
 After making changes:
 
-1. Run linter: `ruff check src/`
-2. Start the game: `python src/main.py`
-3. Test basic actions:
+1. Run test suite: `python run_tests.py`
+2. Run linter: `ruff check src/`
+3. Start the game: `python src/main.py`
+4. Test basic actions:
    - Move around
    - Attack an enemy
    - Pick up an item

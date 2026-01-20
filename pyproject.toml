@@ -34,6 +34,10 @@ select = [
 [tool.ruff.lint.mccabe]
 max-complexity = 7
 
+[tool.ruff.lint.per-file-ignores]
+# Allow camelCase assert methods in tests (following unittest convention)
+"tests/*.py" = ["N802"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
 
