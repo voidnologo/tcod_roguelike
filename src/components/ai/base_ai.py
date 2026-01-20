@@ -1,34 +1,49 @@
+"""Base AI component for entity behavior."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 import tcod as libtcod
 
-from actions import Action
+from components.base_component import BaseComponent
+
+if TYPE_CHECKING:
+    from entity.actor import Actor
+    from game_types import Position
 
 
-class BaseAI(Action):
-    entity = None
+class BaseAI(BaseComponent):
+    """Base class for AI components that control actor behavior."""
 
-    def perform(self):
+    entity: Actor
+
+    def __init__(self, entity: Actor) -> None:
+        self.entity = entity
+
+    @property
+    def parent(self) -> Actor:
+        """Alias for entity to maintain BaseComponent compatibility."""
+        return self.entity
+
+    def perform(self) -> None:
+        """Perform the AI's action. Must be overridden by subclasses."""
         raise NotImplementedError()
 
-    def get_path_to(self, dest_x, dest_y):
+    def get_path_to(self, dest_x: int, dest_y: int) -> list[Position]:
+        """Compute a path from the entity to the destination."""
         cost = np.array(self.entity.gamemap.tiles['walkable'], dtype=np.int8)
 
         for entity in self.entity.gamemap.entities:
             if entity.blocks_movement and cost[entity.x, entity.y]:
-                # add to the cost of the blocked position
-                # a lower number means more enemies will crowd behind each other in
-                # hallways.  A higher number means enemies will take longer paths
-                # in order to surround the player
                 cost[entity.x, entity.y] += 10
 
-        # Create a graph from the cost array and pass that graph to a new pathfinder
         graph = libtcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
         pathfinder = libtcod.path.Pathfinder(graph)
 
         pathfinder.add_root((self.entity.x, self.entity.y))
 
-        # Compute the path to the destination and remove the starting point
         path = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
 
-        # Convert the path format
         return [(index[0], index[1]) for index in path]

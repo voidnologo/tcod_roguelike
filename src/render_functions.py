@@ -1,53 +1,39 @@
-from itertools import product
+"""Render functions for UI elements."""
 
-import tcod as libtcod
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import color
 
+if TYPE_CHECKING:
+    from tcod.console import Console
 
-def render_all(console, entities, game_map, screen_width, screen_height, colors):
-    render_map(console, game_map, colors)
-
-    for entity in entities:
-        draw_entity(console, entity)
-
-    console.blit(console, 0, 0, screen_width, screen_height, 0, 0)
+    from engine import Engine
+    from map_objects.game_map import GameMap
 
 
-def render_map(console, game_map, colors):
-    for y, x in product(range(game_map.height), range(game_map.width)):
-        wall = game_map.tiles[x][y].block_sight
-        if wall:
-            libtcod.console_set_char_background(console, x, y, colors.get('dark_wall'))
-        else:
-            libtcod.console_set_char_background(console, x, y, colors.get('dark_ground'))
-
-
-def clear_all(console, entities):
-    for entity in entities:
-        clear_entity(console, entity)
-
-
-def draw_entity(console, entity):
-    console.print(entity.x, entity.y, entity.icon, entity.color)
-
-
-def clear_entity(console, entity):
-    console.print(entity.x, entity.y, '')
-
-
-def render_bar(console, current_value, max_value, total_width):
-    x_loc = 0
-    y_loc = 51
+def render_bar(
+    console: Console,
+    current_value: int,
+    max_value: int,
+    total_width: int,
+    x: int = 0,
+    y: int = 51,
+) -> None:
+    """Render a health bar."""
     bar_width = int(float(current_value) / max_value * total_width)
-    console.draw_rect(x=x_loc, y=y_loc, width=20, height=1, ch=1, bg=color.bar_empty)
+
+    console.draw_rect(x=x, y=y, width=total_width, height=1, ch=1, bg=color.bar_empty)
+
     if bar_width > 0:
-        console.draw_rect(x=x_loc, y=y_loc, width=bar_width, height=1, ch=1, bg=color.bar_filled)
+        console.draw_rect(x=x, y=y, width=bar_width, height=1, ch=1, bg=color.bar_filled)
 
-    console.print(x=x_loc + 1, y=y_loc, string=f'HP: {current_value}/{max_value}', fg=color.bar_text)
+    console.print(x=x + 1, y=y, string=f'HP: {current_value}/{max_value}', fg=color.bar_text)
 
 
-def get_names_at_location(x, y, game_map):
+def get_names_at_location(x: int, y: int, game_map: GameMap) -> str:
+    """Return a comma-separated string of entity names at the given location."""
     if not game_map.in_bounds(x, y) or not game_map.visible[x, y]:
         return ''
 
@@ -55,7 +41,13 @@ def get_names_at_location(x, y, game_map):
     return names.capitalize()
 
 
-def render_names_at_mouse_location(console, x, y, engine):
+def render_names_at_mouse_location(
+    console: Console,
+    x: int,
+    y: int,
+    engine: Engine,
+) -> None:
+    """Render the names of entities at the mouse location."""
     mouse_x, mouse_y = engine.mouse_location
-    names_at_mouse_location = get_names_at_location(x=mouse_x, y=mouse_y, game_map=engine.game_map)
-    console.print(x=x, y=y, string=names_at_mouse_location)
+    names = get_names_at_location(x=mouse_x, y=mouse_y, game_map=engine.game_map)
+    console.print(x=x, y=y, string=names)

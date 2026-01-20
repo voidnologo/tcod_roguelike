@@ -1,15 +1,11 @@
-class ImpossibleActionError(Exception):
-    """
-    Action is impossible to perform
-    Reason in the exception message
-    """
+"""Custom exceptions for the game."""
 
-    pass
+from __future__ import annotations
+
+
+class ImpossibleActionError(Exception):
+    """Exception raised when an action cannot be performed."""
 
 
 class QuitWithoutSaving(SystemExit):
-    """
-    Can be raised to exit the game without automatically saving.
-    """
-
-    pass
+    """Exception raised to exit the game without saving."""

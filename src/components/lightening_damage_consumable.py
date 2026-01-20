@@ -1,13 +1,25 @@
+"""Lightning damage consumable that strikes the nearest enemy."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import exceptions
 from components.consumable import Consumable
 
+if TYPE_CHECKING:
+    from actions.item_action import ItemAction
+
 
 class LighteningDamageConsumable(Consumable):
-    def __init__(self, damage, maximum_range):
+    """A consumable that strikes the closest visible enemy with lightning."""
+
+    def __init__(self, damage: int, maximum_range: int) -> None:
         self.damage = damage
         self.maximum_range = maximum_range
 
-    def activate(self, action):
+    def activate(self, action: ItemAction) -> None:
+        """Strike the nearest visible enemy with lightning."""
         consumer = action.entity
         target = None
         closest_distance = self.maximum_range + 1.0

@@ -1,10 +1,17 @@
+"""Melee action for attacking adjacent entities."""
+
+from __future__ import annotations
+
 import color
 import exceptions
 from actions.action_with_direction import ActionWithDirection
 
 
 class MeleeAction(ActionWithDirection):
-    def perform(self):
+    """An action that attacks an adjacent target."""
+
+    def perform(self) -> None:
+        """Attack the target actor at the destination."""
         target = self.target_actor
         if not target:
             raise exceptions.ImpossibleActionError('Nothing to attack.')
@@ -16,6 +23,6 @@ class MeleeAction(ActionWithDirection):
 
         if damage > 0:
             self.engine.message_log.add_message(f'{attack_desc} for {damage} hit points.', attack_color)
-            target.fighter.hp -= damage
+            target.fighter.take_damage(damage)
         else:
             self.engine.message_log.add_message(f'{attack_desc} does no damage.', attack_color)

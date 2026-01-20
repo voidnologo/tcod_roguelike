@@ -1,78 +1,95 @@
+"""Main entry point for the roguelike game."""
+
+from __future__ import annotations
+
 import copy
 import traceback
+from typing import TYPE_CHECKING
 
 import tcod as libtcod
 
 import color
 import entity_factories
 import exceptions
+from config import DEFAULT_CONFIG, GameConfig
 from engine import Engine
 from input_handlers import EventHandler, MainGameEventHandler
 from map_objects.procgen import generate_dungeon
 
-screen_width = 80
-screen_height = 60
-map_width = 80
-map_height = 50
+if TYPE_CHECKING:
+    from tcod.console import Console
+    from tcod.context import Context
 
-room_max_size = 10
-room_min_size = 6
-max_rooms = 30
-
-max_monsters_per_room = 2
-max_items_per_room = 2
+    from input_handlers.base_event_handler import BaseEventHandler
 
 
-def game_loop(console, context, handler):
+def game_loop(
+    console: Console,
+    context: Context,
+    handler: BaseEventHandler,
+) -> BaseEventHandler:
+    """Process a single frame of the game loop."""
     console.clear()
     handler.on_render(console=console)
     context.present(console)
+
     try:
         for event in libtcod.event.wait():
             context.convert_event(event)
             handler = handler.handle_events(event)
     except Exception:
-        traceback.print_exc()  # print errors to stderr
+        traceback.print_exc()
         if isinstance(handler, EventHandler):
-            # then print to message log
             handler.engine.message_log.add_message(traceback.format_exc(), color.error)
 
+    return handler
 
-def main():
-    tileset = libtcod.tileset.load_tilesheet('dejavu10x10_gs_tc.png', 32, 8, libtcod.tileset.CHARMAP_TCOD)
+
+def main(config: GameConfig = DEFAULT_CONFIG) -> None:
+    """Initialize and run the game."""
+    tileset = libtcod.tileset.load_tilesheet(
+        'dejavu10x10_gs_tc.png', 32, 8, libtcod.tileset.CHARMAP_TCOD
+    )
+
     player = copy.deepcopy(entity_factories.player)
-    engine = Engine(player=player)
+    engine = Engine(player=player, config=config)
+
     engine.game_map = generate_dungeon(
-        max_rooms=max_rooms,
-        room_min_size=room_min_size,
-        room_max_size=room_max_size,
-        map_width=map_width,
-        map_height=map_height,
-        max_monsters_per_room=max_monsters_per_room,
-        max_items_per_room=max_items_per_room,
+        max_rooms=config.max_rooms,
+        room_min_size=config.room_min_size,
+        room_max_size=config.room_max_size,
+        map_width=config.map_width,
+        map_height=config.map_height,
+        max_monsters_per_room=config.max_monsters_per_room,
+        max_items_per_room=config.max_items_per_room,
         engine=engine,
     )
+
     engine.update_fov()
     engine.message_log.add_message(
-        'Welcome to the next iteration of Super Dungeon Slaughter!', color.welcome_text
+        'Welcome to the next iteration of Super Dungeon Slaughter!',
+        color.welcome_text,
     )
 
-    handler = MainGameEventHandler(engine)
+    handler: BaseEventHandler = MainGameEventHandler(engine)
 
     with libtcod.context.new_terminal(
-        columns=screen_width, rows=screen_height, tileset=tileset, title='Yet Another Roguelike', vsync=True
+        columns=config.screen_width,
+        rows=config.screen_height,
+        tileset=tileset,
+        title='Yet Another Roguelike',
+        vsync=True,
     ) as context:
-        console = libtcod.Console(screen_width, screen_height, order='F')
+        console = libtcod.Console(config.screen_width, config.screen_height, order='F')
+
         try:
             while True:
-                game_loop(console, context, handler)
+                handler = game_loop(console, context, handler)
         except exceptions.QuitWithoutSaving:
             raise
-        except SystemExit:  # Save and quit
-            # TODO: Add save function
+        except SystemExit:
             raise
-        except BaseException:  # Save on other unexpected exceptions
-            # TODO: Add save function
+        except BaseException:
             raise
 
 

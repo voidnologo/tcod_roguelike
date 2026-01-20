@@ -1,13 +1,25 @@
+"""Healing consumable that restores HP."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import color
 import exceptions
 from components.consumable import Consumable
 
+if TYPE_CHECKING:
+    from actions.item_action import ItemAction
+
 
 class HealingConsumable(Consumable):
-    def __init__(self, amount):
+    """A consumable that heals the user."""
+
+    def __init__(self, amount: int) -> None:
         self.amount = amount
 
-    def activate(self, action):
+    def activate(self, action: ItemAction) -> None:
+        """Heal the consumer."""
         consumer = action.entity
         amount_recovered = consumer.fighter.heal(self.amount)
 

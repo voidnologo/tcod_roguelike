@@ -1,28 +1,40 @@
+"""Fighter component for combat capabilities."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import color
 from components.base_component import BaseComponent
 from render_order import RenderOrder
 
+if TYPE_CHECKING:
+    from entity.actor import Actor
+
 
 class Fighter(BaseComponent):
-    parent = None
+    """Component for entities that can engage in combat."""
 
-    def __init__(self, hp, defense, power):
+    parent: Actor
+
+    def __init__(self, hp: int, defense: int, power: int) -> None:
         self.max_hp = hp
         self._hp = hp
         self.defense = defense
         self.power = power
 
     @property
-    def hp(self):
+    def hp(self) -> int:
         return self._hp
 
     @hp.setter
-    def hp(self, value):
+    def hp(self, value: int) -> None:
         self._hp = max(0, min(value, self.max_hp))
         if self._hp == 0 and self.parent.ai:
             self.die()
 
-    def die(self):
+    def die(self) -> None:
+        """Handle the death of the entity."""
         if self.engine.player is self.parent:
             death_message = 'You Died!'
             death_message_color = color.player_die
@@ -39,7 +51,8 @@ class Fighter(BaseComponent):
 
         self.engine.message_log.add_message(death_message, death_message_color)
 
-    def heal(self, amount):
+    def heal(self, amount: int) -> int:
+        """Heal the entity by the given amount. Returns amount healed."""
         if self.hp == self.max_hp:
             return 0
 
@@ -48,5 +61,6 @@ class Fighter(BaseComponent):
         self.hp = new_hp_value
         return amount_recovered
 
-    def take_damage(self, amount):
+    def take_damage(self, amount: int) -> None:
+        """Reduce HP by the given amount."""
         self.hp -= amount

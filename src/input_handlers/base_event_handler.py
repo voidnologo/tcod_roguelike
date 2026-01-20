@@ -1,40 +1,58 @@
+"""Base event handler classes."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import tcod as libtcod
 
 import actions
 import color
 import exceptions
 
+if TYPE_CHECKING:
+    from tcod.console import Console
+    from tcod.event import Event, MouseMotion, Quit
 
-class BaseEventHandler(libtcod.event.EventDispatch):
-    def handle_events(self, event):
-        """
-        Handle an event and return the next active event handler.
-        """
+    from actions.base_action import Action
+    from engine import Engine
+
+type ActionOrHandler = Action | BaseEventHandler | None
+
+
+class BaseEventHandler(libtcod.event.EventDispatch[ActionOrHandler]):
+    """Base class for event handlers."""
+
+    def handle_events(self, event: Event) -> BaseEventHandler:
+        """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
             return state
         assert not isinstance(state, actions.Action), f'{self!r} can not handle actions.'
         return self
 
-    def on_render(self, console):
+    def on_render(self, console: Console) -> None:
+        """Render the handler's state to the console."""
         raise NotImplementedError()
 
-    def ev_quit(self, event):
+    def ev_quit(self, event: Quit) -> ActionOrHandler:
+        """Handle quit event."""
         raise SystemExit()
 
 
 class EventHandler(BaseEventHandler):
-    def __init__(self, engine):
+    """Event handler that has access to the game engine."""
+
+    def __init__(self, engine: Engine) -> None:
         self.engine = engine
 
-    def handle_events(self, event):
+    def handle_events(self, event: Event) -> BaseEventHandler:
+        """Handle an event and return the next active event handler."""
         action_or_state = self.dispatch(event)
         if isinstance(action_or_state, BaseEventHandler):
             return action_or_state
         if self.handle_action(action_or_state):
-            # a valid action is performed
             if not self.engine.player.is_alive:
-                # the player was killed sometime during or after the action.
                 from input_handlers.game_over_event_handler import GameOverEventHandler
 
                 return GameOverEventHandler(self.engine)
@@ -43,11 +61,8 @@ class EventHandler(BaseEventHandler):
             return MainGameEventHandler(self.engine)
         return self
 
-    def handle_action(self, action):
-        """
-        Handle actions returned from event methods
-        returns True if action will advance a turn
-        """
+    def handle_action(self, action: Action | None) -> bool:
+        """Handle actions returned from event methods. Returns True if action advances turn."""
         if action is None:
             return False
 
@@ -55,15 +70,18 @@ class EventHandler(BaseEventHandler):
             action.perform()
         except exceptions.ImpossibleActionError as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
-            return False  # skip enemy turn on exceptions
+            return False
 
         self.engine.handle_enemy_turns()
         self.engine.update_fov()
         return True
 
-    def ev_mousemotion(self, event):
+    def ev_mousemotion(self, event: MouseMotion) -> ActionOrHandler:
+        """Handle mouse motion."""
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
             self.engine.mouse_location = (event.tile.x, event.tile.y)
+        return None
 
-    def on_render(self, console):
+    def on_render(self, console: Console) -> None:
+        """Render the game state."""
         self.engine.render(console)

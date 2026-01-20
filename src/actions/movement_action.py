@@ -1,19 +1,25 @@
+"""Movement action for moving entities."""
+
+from __future__ import annotations
+
 import exceptions
 from actions.action_with_direction import ActionWithDirection
 
 
 class MovementAction(ActionWithDirection):
-    def perform(self):
-        dest_x, dest_y = self.dest_xy
+    """An action that moves an entity in a direction."""
 
-        if not self.engine.game_map.in_bounds(dest_x, dest_y):
-            # destination off of map
-            raise exceptions.ImpossibleActionError('That way is blocked.')
-        if not self.engine.game_map.tiles['walkable'][dest_x, dest_y]:
-            # destination blocked by a tile
-            raise exceptions.ImpossibleActionError('That way is blocked.')
-        if self.blocking_entity:
-            # destination blocked by a entity
+    def perform(self) -> None:
+        """Move the entity if the destination is valid."""
+        dest_x, dest_y = self.dest_xy
+        game_map = self.engine.game_map
+
+        is_blocked = (
+            not game_map.in_bounds(dest_x, dest_y)
+            or not game_map.tiles['walkable'][dest_x, dest_y]
+            or self.blocking_entity is not None
+        )
+        if is_blocked:
             raise exceptions.ImpossibleActionError('That way is blocked.')
 
         self.entity.move(self.dx, self.dy)

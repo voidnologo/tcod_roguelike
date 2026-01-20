@@ -3,7 +3,7 @@ name = "tcod-roguelike"
 version = "0.1.0"
 description = "A roguelike game built with tcod"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "tcod",
 ]
@@ -16,7 +16,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py312"
 src = ["src"]
 
 [tool.ruff.lint]

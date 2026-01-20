@@ -1,18 +1,30 @@
+"""Item entity class for objects that can be picked up and used."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from entity.base_entity import Entity
 from render_order import RenderOrder
 
+if TYPE_CHECKING:
+    from components.consumable import Consumable
+    from game_types import ColorRGB
+
 
 class Item(Entity):
+    """An entity that can be picked up and used."""
+
     def __init__(
         self,
         *,
-        x=0,
-        y=0,
-        icon='?',
-        color=(255, 255, 255),
-        name='<Unnamed>',
-        consumable=None,
-    ):
+        x: int = 0,
+        y: int = 0,
+        icon: str = '?',
+        color: ColorRGB = (255, 255, 255),
+        name: str = '<Unnamed>',
+        consumable: Consumable,
+    ) -> None:
         super().__init__(
             x=x,
             y=y,
