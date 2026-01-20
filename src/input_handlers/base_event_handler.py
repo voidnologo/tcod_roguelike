@@ -4,26 +4,24 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import tcod as libtcod
+import tcod.console
+import tcod.event
 
 import actions
 import color
 import exceptions
 
 if TYPE_CHECKING:
-    from tcod.console import Console
-    from tcod.event import Event, MouseMotion, Quit
-
     from actions.base_action import Action
     from engine import Engine
 
 type ActionOrHandler = Action | BaseEventHandler | None
 
 
-class BaseEventHandler(libtcod.event.EventDispatch[ActionOrHandler]):
+class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     """Base class for event handlers."""
 
-    def handle_events(self, event: Event) -> BaseEventHandler:
+    def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
@@ -31,11 +29,11 @@ class BaseEventHandler(libtcod.event.EventDispatch[ActionOrHandler]):
         assert not isinstance(state, actions.Action), f'{self!r} can not handle actions.'
         return self
 
-    def on_render(self, console: Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Render the handler's state to the console."""
         raise NotImplementedError()
 
-    def ev_quit(self, event: Quit) -> ActionOrHandler:
+    def ev_quit(self, event: tcod.event.Quit) -> ActionOrHandler:
         """Handle quit event."""
         raise SystemExit()
 
@@ -46,7 +44,7 @@ class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine) -> None:
         self.engine = engine
 
-    def handle_events(self, event: Event) -> BaseEventHandler:
+    def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
         action_or_state = self.dispatch(event)
         if isinstance(action_or_state, BaseEventHandler):
@@ -76,12 +74,12 @@ class EventHandler(BaseEventHandler):
         self.engine.update_fov()
         return True
 
-    def ev_mousemotion(self, event: MouseMotion) -> ActionOrHandler:
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> ActionOrHandler:
         """Handle mouse motion."""
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
             self.engine.mouse_location = (event.tile.x, event.tile.y)
         return None
 
-    def on_render(self, console: Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Render the game state."""
         self.engine.render(console)

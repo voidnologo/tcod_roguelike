@@ -5,13 +5,13 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
+import tcod.console
+
 import color
 from input_handlers.base_event_handler import ActionOrHandler
 from input_handlers.select_index_handler import SelectIndexHandler
 
 if TYPE_CHECKING:
-    from tcod.console import Console
-
     from engine import Engine
     from game_types import Position
 
@@ -29,7 +29,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         self.radius = radius
         self.callback = callback
 
-    def on_render(self, console: Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Render the targeting area."""
         super().on_render(console)
         x, y = self.engine.mouse_location

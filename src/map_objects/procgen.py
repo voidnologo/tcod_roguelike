@@ -7,7 +7,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import tcod as libtcod
+import tcod.los
 
 import entity_factories
 from map_objects import tile_types
@@ -107,9 +107,9 @@ def tunnel_between(start: Position, end: Position) -> Iterator[Position]:
     else:
         corner_x, corner_y = x1, y2
 
-    for x, y in libtcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+    for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
         yield x, y
-    for x, y in libtcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+    for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
 
 

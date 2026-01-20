@@ -6,7 +6,11 @@ import copy
 import traceback
 from typing import TYPE_CHECKING
 
-import tcod as libtcod
+import tcod
+import tcod.console
+import tcod.context
+import tcod.event
+import tcod.tileset
 
 import color
 import entity_factories
@@ -17,15 +21,12 @@ from input_handlers import EventHandler, MainGameEventHandler
 from map_objects.procgen import generate_dungeon
 
 if TYPE_CHECKING:
-    from tcod.console import Console
-    from tcod.context import Context
-
     from input_handlers.base_event_handler import BaseEventHandler
 
 
 def game_loop(
-    console: Console,
-    context: Context,
+    console: tcod.console.Console,
+    context: tcod.context.Context,
     handler: BaseEventHandler,
 ) -> BaseEventHandler:
     """Process a single frame of the game loop."""
@@ -34,7 +35,7 @@ def game_loop(
     context.present(console)
 
     try:
-        for event in libtcod.event.wait():
+        for event in tcod.event.wait():
             context.convert_event(event)
             handler = handler.handle_events(event)
     except Exception:
@@ -47,8 +48,8 @@ def game_loop(
 
 def main(config: GameConfig = DEFAULT_CONFIG) -> None:
     """Initialize and run the game."""
-    tileset = libtcod.tileset.load_tilesheet(
-        'dejavu10x10_gs_tc.png', 32, 8, libtcod.tileset.CHARMAP_TCOD
+    tileset = tcod.tileset.load_tilesheet(
+        'dejavu10x10_gs_tc.png', 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
     player = copy.deepcopy(entity_factories.player)
@@ -73,14 +74,14 @@ def main(config: GameConfig = DEFAULT_CONFIG) -> None:
 
     handler: BaseEventHandler = MainGameEventHandler(engine)
 
-    with libtcod.context.new_terminal(
+    with tcod.context.new_terminal(
         columns=config.screen_width,
         rows=config.screen_height,
         tileset=tileset,
         title='Yet Another Roguelike',
         vsync=True,
     ) as context:
-        console = libtcod.Console(config.screen_width, config.screen_height, order='F')
+        console = tcod.console.Console(config.screen_width, config.screen_height, order='F')
 
         try:
             while True:

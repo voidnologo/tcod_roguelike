@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import tcod as libtcod
+import tcod.console
+import tcod.constants
+import tcod.event
+from tcod.event import KeySym
 
 from input_handlers import consts
 from input_handlers.base_event_handler import ActionOrHandler, EventHandler
 
 if TYPE_CHECKING:
-    from tcod.console import Console
-    from tcod.event import KeyDown
-
     from engine import Engine
 
 
@@ -24,13 +24,13 @@ class HistoryViewer(EventHandler):
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
 
-    def on_render(self, console: Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Render the message history panel."""
         super().on_render(console)
-        log_console = libtcod.Console(console.width - 6, console.height - 6)
+        log_console = tcod.console.Console(console.width - 6, console.height - 6)
 
         log_console.draw_frame(0, 0, log_console.width, log_console.height)
-        log_console.print_box(0, 0, log_console.width, 1, '┤Message history├', alignment=libtcod.CENTER)
+        log_console.print_box(0, 0, log_console.width, 1, '┤Message history├', alignment=tcod.constants.CENTER)
 
         self.engine.message_log.render_messages(
             log_console,
@@ -42,7 +42,7 @@ class HistoryViewer(EventHandler):
         )
         log_console.blit(console, 3, 3)
 
-    def ev_keydown(self, event: KeyDown) -> ActionOrHandler:
+    def ev_keydown(self, event: tcod.event.KeyDown) -> ActionOrHandler:
         """Handle key presses for navigation."""
         match event.sym:
             case sym if sym in consts.CURSOR_Y_KEYS:
@@ -53,9 +53,9 @@ class HistoryViewer(EventHandler):
                     self.cursor = 0
                 else:
                     self.cursor = max(0, min(self.cursor + adjust, self.log_length - 1))
-            case libtcod.event.K_HOME:
+            case KeySym.HOME:
                 self.cursor = 0
-            case libtcod.event.K_END:
+            case KeySym.END:
                 self.cursor = self.log_length - 1
             case _:
                 from input_handlers.main_game_event_handler import MainGameEventHandler

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import tcod as libtcod
+import tcod.path
 
 from components.base_component import BaseComponent
 
@@ -39,8 +39,8 @@ class BaseAI(BaseComponent):
             if entity.blocks_movement and cost[entity.x, entity.y]:
                 cost[entity.x, entity.y] += 10
 
-        graph = libtcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
-        pathfinder = libtcod.path.Pathfinder(graph)
+        graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
+        pathfinder = tcod.path.Pathfinder(graph)
 
         pathfinder.add_root((self.entity.x, self.entity.y))
 
