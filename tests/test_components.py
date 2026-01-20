@@ -378,7 +378,7 @@ class TestHealingConsumable(GameTestCase):
 
 
 class TestLightningConsumable(GameTestCase):
-    """Test LighteningDamageConsumable item effects."""
+    """Test LightningDamageConsumable item effects."""
 
     def test_lightning_scroll_damages_nearest_enemy(self):
         """Lightning scroll damages the closest visible enemy."""

@@ -48,7 +48,6 @@ class GameMap:
             fill_value=tile_types.wall,
             order='F',
         )
-        tiles[30:33, 22] = tile_types.wall
         return tiles
 
     def in_bounds(self, x: int, y: int) -> bool:

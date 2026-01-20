@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from actions.item_action import ItemAction
 
 
-class LighteningDamageConsumable(Consumable):
+class LightningDamageConsumable(Consumable):
     """A consumable that strikes the closest visible enemy with lightning."""
 
     def __init__(self, damage: int, maximum_range: int) -> None:
@@ -34,7 +34,7 @@ class LighteningDamageConsumable(Consumable):
 
         if target:
             self.engine.message_log.add_message(
-                f'A lightening bolt strike the {target.name} with a loud crash, for {self.damage} damage!'
+                f'A lightning bolt strikes the {target.name} with a loud crash, for {self.damage} damage!'
             )
             target.fighter.take_damage(self.damage)
             self.consume()

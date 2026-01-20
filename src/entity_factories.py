@@ -11,7 +11,7 @@ from components.fighter import Fighter
 from components.fireball_damage_consumable import FireballDamageConsumable
 from components.healing_consumable import HealingConsumable
 from components.inventory import Inventory
-from components.lightening_damage_consumable import LighteningDamageConsumable
+from components.lightning_damage_consumable import LightningDamageConsumable
 from entity import Actor, Item
 
 if TYPE_CHECKING:
@@ -131,11 +131,11 @@ health_potion = Item(
     consumable=HealingConsumable(amount=4),
 )
 
-lightening_scroll = Item(
+lightning_scroll = Item(
     icon='~',
     color=(255, 165, 83),
-    name='Lightening Scroll',
-    consumable=LighteningDamageConsumable(damage=20, maximum_range=5),
+    name='Lightning Scroll',
+    consumable=LightningDamageConsumable(damage=20, maximum_range=5),
 )
 
 confusion_scroll = Item(

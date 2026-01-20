@@ -34,6 +34,7 @@ class FireballDamageConsumable(Consumable):
 
     def activate(self, action: ItemAction) -> None:
         """Deal fire damage to all actors in the radius."""
+        consumer = action.entity
         target_xy = action.target_xy
 
         if not self.engine.game_map.visible[action.target_xy]:
@@ -41,6 +42,8 @@ class FireballDamageConsumable(Consumable):
 
         targets_hit = False
         for actor in self.engine.game_map.actors:
+            if actor is consumer:
+                continue
             if actor.distance(*target_xy) <= self.radius:
                 self.engine.message_log.add_message(
                     f'The {actor.name} is engulfed in a fiery explosion, taking {self.damage} damage!'

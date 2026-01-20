@@ -38,7 +38,7 @@ from components.fighter import Fighter
 from components.fireball_damage_consumable import FireballDamageConsumable
 from components.healing_consumable import HealingConsumable
 from components.inventory import Inventory
-from components.lightening_damage_consumable import LighteningDamageConsumable
+from components.lightning_damage_consumable import LightningDamageConsumable
 from config import DEFAULT_CONFIG, GameConfig
 from engine import Engine
 from entity import Actor, Item
@@ -309,7 +309,7 @@ class GameFactory:
             icon='~',
             color=(255, 165, 83),
             name='Lightning Scroll',
-            consumable=LighteningDamageConsumable(damage=damage, maximum_range=maximum_range),
+            consumable=LightningDamageConsumable(damage=damage, maximum_range=maximum_range),
         )
         if game_map:
             scroll.place(x, y, game_map)

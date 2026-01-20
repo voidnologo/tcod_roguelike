@@ -36,7 +36,7 @@ ITEM_SPAWN_TABLE: list[SpawnEntry] = [
     SpawnEntry(entity_factories.health_potion, 0.7),
     SpawnEntry(entity_factories.fireball_scroll, 0.1),
     SpawnEntry(entity_factories.confusion_scroll, 0.1),
-    SpawnEntry(entity_factories.lightening_scroll, 0.1),
+    SpawnEntry(entity_factories.lightning_scroll, 0.1),
 ]
 
 

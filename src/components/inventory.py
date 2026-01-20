@@ -24,7 +24,7 @@ class Inventory(BaseComponent):
         """Remove an item from the inventory and place it on the game map."""
         self.items.remove(item)
         item.place(self.parent.x, self.parent.y, self.gamemap)
-        self.engine.message_log.add_message(f'You dropped the {item.name}.')
+        self.engine.message_log.add_message(f'{self.parent.name} dropped the {item.name}.')
 
     @property
     def full(self) -> bool:

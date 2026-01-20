@@ -43,6 +43,8 @@ class ConfusedEnemy(BaseAI):
         if self.turns_remaining <= 0:
             self.engine.message_log.add_message(f'The {self.entity.name} is no longer confused.')
             self.entity.ai = self.previous_ai
+            if self.previous_ai:
+                self.previous_ai.perform()
         else:
             direction_x, direction_y = random.choice(DIRECTIONS)
             self.turns_remaining -= 1
