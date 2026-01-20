@@ -1,7 +1,5 @@
 import actions
-import color
 import components.inventory
-import exceptions
 from components.base_component import BaseComponent
 
 

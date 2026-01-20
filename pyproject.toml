@@ -1,15 +1,44 @@
-[tool.black]
-line-length = 110
-skip-string-normalization = true
-string-normalization = false
-target-version = ['py39']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-)/
-'''
+[project]
+name = "tcod-roguelike"
+version = "0.1.0"
+description = "A roguelike game built with tcod"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "tcod",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "isort",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "C90",    # mccabe complexity
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 7
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = ["src"]
+known_first_party = ["src"]

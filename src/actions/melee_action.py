@@ -1,13 +1,13 @@
-from actions.action_with_direction import ActionWithDirection
 import color
 import exceptions
+from actions.action_with_direction import ActionWithDirection
 
 
 class MeleeAction(ActionWithDirection):
     def perform(self):
         target = self.target_actor
         if not target:
-            raise exceptions.Impossible('Nothing to attack.')
+            raise exceptions.ImpossibleActionError('Nothing to attack.')
 
         damage = self.entity.fighter.power - target.fighter.defense
 

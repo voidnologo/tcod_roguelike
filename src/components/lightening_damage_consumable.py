@@ -1,5 +1,5 @@
-from components.consumable import Consumable
 import exceptions
+from components.consumable import Consumable
 
 
 class LighteningDamageConsumable(Consumable):
@@ -27,4 +27,4 @@ class LighteningDamageConsumable(Consumable):
             target.fighter.take_damage(self.damage)
             self.consume()
         else:
-            raise exceptions.Impossible('No enemy is close enough to strike.')
+            raise exceptions.ImpossibleActionError('No enemy is close enough to strike.')

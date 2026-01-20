@@ -1,8 +1,8 @@
 from components.ai import BaseAI, HostileEnemy
 from components.confusion_consumable import ConfusionConsumable
 from components.fighter import Fighter
-from components.healing_consumable import HealingConsumable
 from components.fireball_damage_consumable import FireballDamageConsumable
+from components.healing_consumable import HealingConsumable
 from components.inventory import Inventory
 from components.lightening_damage_consumable import LighteningDamageConsumable
 from entity import Actor, Item

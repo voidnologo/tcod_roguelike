@@ -53,7 +53,7 @@ class EventHandler(BaseEventHandler):
 
         try:
             action.perform()
-        except exceptions.Impossible as exc:
+        except exceptions.ImpossibleActionError as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
             return False  # skip enemy turn on exceptions
 

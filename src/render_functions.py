@@ -1,4 +1,5 @@
 from itertools import product
+
 import tcod as libtcod
 
 import color

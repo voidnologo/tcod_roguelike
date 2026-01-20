@@ -1,3 +1,3 @@
-from .base_entity import Entity
-from .actor import Actor
-from .item import Item
+from .actor import Actor as Actor
+from .base_entity import Entity as Entity
+from .item import Item as Item

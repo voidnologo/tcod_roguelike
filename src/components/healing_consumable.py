@@ -1,6 +1,6 @@
 import color
-from components.consumable import Consumable
 import exceptions
+from components.consumable import Consumable
 
 
 class HealingConsumable(Consumable):
@@ -18,4 +18,4 @@ class HealingConsumable(Consumable):
             )
             self.consume()
         else:
-            raise exceptions.Impossible('Your health is already full.')
+            raise exceptions.ImpossibleActionError('Your health is already full.')

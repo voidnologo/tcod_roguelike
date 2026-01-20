@@ -1,6 +1,5 @@
 import numpy as np
 
-
 # Tile graphics structured type compatible with Console.tiles_rgb.
 graphic_dt = np.dtype(
     [

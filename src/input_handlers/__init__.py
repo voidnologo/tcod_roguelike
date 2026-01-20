@@ -1,12 +1,12 @@
-from .area_ranged_attack_handler import AreaRangedAttackHandler
-from .ask_user_event_handler import AskUserEventHandler
-from .base_event_handler import EventHandler
-from .game_over_event_handler import GameOverEventHandler
-from .history_viewer import HistoryViewer
-from .inventory_activate_handler import InventoryActivateHandler
-from .inventory_drop_handler import InventoryDropHandler
-from .inventory_event_handler import InventoryEventHandler
-from .look_handler import LookHandler
-from .main_game_event_handler import MainGameEventHandler
-from .select_index_handler import SelectIndexHandler
-from .single_ranged_attack_handler import SingleRangedAttackHandler
+from .area_ranged_attack_handler import AreaRangedAttackHandler as AreaRangedAttackHandler
+from .ask_user_event_handler import AskUserEventHandler as AskUserEventHandler
+from .base_event_handler import EventHandler as EventHandler
+from .game_over_event_handler import GameOverEventHandler as GameOverEventHandler
+from .history_viewer import HistoryViewer as HistoryViewer
+from .inventory_activate_handler import InventoryActivateHandler as InventoryActivateHandler
+from .inventory_drop_handler import InventoryDropHandler as InventoryDropHandler
+from .inventory_event_handler import InventoryEventHandler as InventoryEventHandler
+from .look_handler import LookHandler as LookHandler
+from .main_game_event_handler import MainGameEventHandler as MainGameEventHandler
+from .select_index_handler import SelectIndexHandler as SelectIndexHandler
+from .single_ranged_attack_handler import SingleRangedAttackHandler as SingleRangedAttackHandler

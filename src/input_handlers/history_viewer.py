@@ -1,7 +1,7 @@
 import tcod as libtcod
 
-from input_handlers.base_event_handler import EventHandler
 from input_handlers import consts
+from input_handlers.base_event_handler import EventHandler
 
 
 class HistoryViewer(EventHandler):
@@ -48,7 +48,7 @@ class HistoryViewer(EventHandler):
         elif event.sym == libtcod.event.K_HOME:
             self.cursor = 0  # move directly to the top message
         elif event.sym == libtcod.event.K_END:
-            self.cursor == self.log_length - 1  # move directly to last message
+            self.cursor = self.log_length - 1  # move directly to last message
         else:  # any other key moves back to main game state
             from input_handlers.main_game_event_handler import MainGameEventHandler
 

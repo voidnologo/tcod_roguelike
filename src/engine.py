@@ -41,5 +41,5 @@ class Engine:
             if entity.ai:
                 try:
                     entity.ai.perform()
-                except exceptions.Impossible:
+                except exceptions.ImpossibleActionError:
                     pass  # ignore impossible action exceptions from AI

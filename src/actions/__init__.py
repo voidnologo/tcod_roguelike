@@ -1,9 +1,9 @@
-from .action_with_direction import ActionWithDirection
-from .base_action import Action
-from .bump_action import BumpAction
-from .drop_item_action import DropItemAction
-from .item_action import ItemAction
-from .melee_action import MeleeAction
-from .movement_action import MovementAction
-from .pickup_action import PickupAction
-from .wait_action import WaitAction
+from .action_with_direction import ActionWithDirection as ActionWithDirection
+from .base_action import Action as Action
+from .bump_action import BumpAction as BumpAction
+from .drop_item_action import DropItemAction as DropItemAction
+from .item_action import ItemAction as ItemAction
+from .melee_action import MeleeAction as MeleeAction
+from .movement_action import MovementAction as MovementAction
+from .pickup_action import PickupAction as PickupAction
+from .wait_action import WaitAction as WaitAction

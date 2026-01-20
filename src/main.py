@@ -3,13 +3,12 @@ import traceback
 
 import tcod as libtcod
 
-from engine import Engine
 import color
 import entity_factories
 import exceptions
-from input_handlers import MainGameEventHandler, EventHandler
+from engine import Engine
+from input_handlers import EventHandler, MainGameEventHandler
 from map_objects.procgen import generate_dungeon
-
 
 screen_width = 80
 screen_height = 60

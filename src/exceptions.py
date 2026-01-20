@@ -1,4 +1,4 @@
-class Impossible(Exception):
+class ImpossibleActionError(Exception):
     """
     Action is impossible to perform
     Reason in the exception message

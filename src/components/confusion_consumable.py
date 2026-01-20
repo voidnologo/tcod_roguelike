@@ -1,8 +1,8 @@
 import actions
 import color
 import components.ai
-from components.consumable import Consumable
 import exceptions
+from components.consumable import Consumable
 from input_handlers import SingleRangedAttackHandler
 
 
@@ -23,11 +23,11 @@ class ConfusionConsumable(Consumable):
         target = action.target_actor
 
         if not self.engine.game_map.visible[action.target_xy]:
-            raise exceptions.Impossible('You cannot target an area you cannot see.')
+            raise exceptions.ImpossibleActionError('You cannot target an area you cannot see.')
         if not target:
-            raise exceptions.Impossible('You must select an enemy to target.')
+            raise exceptions.ImpossibleActionError('You must select an enemy to target.')
         if target is consumer:
-            raise exceptions.Impossible('You cannot confuse yourself!')
+            raise exceptions.ImpossibleActionError('You cannot confuse yourself!')
 
         self.engine.message_log.add_message(
             f'The eyes of the {target.name} look vacant, as it starts to stumble around!',
